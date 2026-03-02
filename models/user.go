@@ -7,11 +7,6 @@ type User struct {
 	Name     string
 	Email    string `gorm:"unique"`
 	Password string
-}
 
-type Task struct {
-	gorm.Model
-	Title       string
-	Description string
-	UserID      uint
+	Tasks []Task `gorm:"foreignKey:UserId"`
 }

@@ -21,7 +21,7 @@ func main() {
 
 	config.ConnectDB()
 
-	config.DB.AutoMigrate(&models.Task{})
+	config.DB.AutoMigrate(&models.Task{}, &models.Task{})
 
 	router := routes.SetupRoutes()
 
