@@ -13,6 +13,10 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 
 	json.NewDecoder(r.Body).Decode(&task)
+
+	userID := r.Context().Value("user_id").(uint)
+	task.UserId = userID
+
 	config.DB.Create(&task)
 	json.NewEncoder(w).Encode(task)
 }

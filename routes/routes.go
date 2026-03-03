@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"net/http"
 	"taskflow/controllers"
+	"taskflow/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -9,10 +11,10 @@ import (
 func SetupRoutes() *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/tasks", controllers.CreateTask).Methods("POST")
-	router.HandleFunc("/tasks", controllers.GetTasks).Methods("GET")
-	router.HandleFunc("/tasks/{id}", controllers.GetTask).Methods("GET")
-	router.HandleFunc("/tasks/{id}", controllers.DeleteTask).Methods("DELETE")
+	router.Handle("/tasks", middleware.JWTAuth(http.HandlerFunc(controllers.CreateTask))).Methods("POST")
+	router.Handle("/tasks", middleware.JWTAuth(http.HandlerFunc(controllers.GetTasks))).Methods("GET")
+	router.Handle("/tasks/{id}", middleware.JWTAuth(http.HandlerFunc(controllers.GetTask))).Methods("GET")
+	router.Handle("/tasks/{id}", middleware.JWTAuth(http.HandlerFunc(controllers.DeleteTask))).Methods("DELETE")
 
 	router.HandleFunc("/users/{id}", controllers.GetUser).Methods("GET")
 	router.HandleFunc("/users", controllers.CreateUser).Methods("POST")
