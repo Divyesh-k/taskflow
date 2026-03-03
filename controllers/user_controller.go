@@ -24,3 +24,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	config.DB.Create(&user)
 	json.NewEncoder(w).Encode(user)
 }
+
+func AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	var users []models.User
+	config.DB.Preload("Tasks").Find(&users)
+	json.NewEncoder(w).Encode(users)
+}
