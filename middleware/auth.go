@@ -11,29 +11,32 @@ import (
 )
 
 func JWTAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
 
-		if authHeader == "" {
-			http.Error(w, "Missing Token", http.StatusUnauthorized)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		header := r.Header.Get("Authorization")
+
+		if header == "" {
+			http.Error(w, "missing token", 401)
 			return
 		}
 
-		tokenString := strings.Split(authHeader, " ")[1]
+		tokenString := strings.Split(header, " ")[1]
 
-		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 
 		if err != nil || !token.Valid {
-			http.Error(w, "Invalid Token", http.StatusUnauthorized)
+			http.Error(w, "invalid token", 401)
 			return
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		userID := uint(claims["user_id"].(float64))
 
-		ctx := context.WithValue(r.Context(), "user_id", userID)
+		ctx := context.WithValue(r.Context(), "user_id", claims["user_id"])
+		ctx = context.WithValue(ctx, "role", claims["role"])
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
